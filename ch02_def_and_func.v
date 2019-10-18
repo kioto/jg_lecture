@@ -15,6 +15,8 @@ Definition triple x :=
   let double x := x + x in
   double x + x.
 Eval compute in triple 3.
+
+(* 整数とモジュール *)
 Eval compute in 1 - 2.
 
 Require Import ZArith.
@@ -44,9 +46,56 @@ Print Z.p.
 
 Eval compute in 1 - 2.
 
-(* 整数とモジュール *)
-Eval compute in 1 - 2.
+(* データ型の定義 *)
+Inductive janken : Set :=
+  | gu
+  | choki
+  | pa.
 
-Require Import ZArith.
-Module Z.
-  Open Scope Z_scope.
+Definition weakness t :=
+  match t with
+  | gu    => pa
+  | choki => gu
+  | pa    => choki
+  end.
+Eval compute in weakness pa.
+Print bool.
+Print janken.
+
+Definition wins t1 t2 :=
+  match t1, t2 with
+  | gu, choki => true
+  | choki, pa => true
+  | pa,    gu => true
+  | _, _      => false
+  end.
+Check wins.
+Eval compute in wins gu pa.
+
+Module Play2.
+  Inductive winner : Set :=
+    | first
+    | second
+    | aiko.
+
+  Definition play t1 t2 :=
+    if wins t1 t2 then first else
+    if wins t2 t1 then second else
+    aiko.
+
+  Eval compute in play gu pa.
+  Eval compute in play choki choki.
+End Play2.
+
+Print andb.
+Print orb.
+
+Module Play3.
+  Inductive winner : Set :=
+    | first
+    | second
+    | third
+    | aiko.
+
+  Definition play (t1 t2 t3 : janken) : winner := aiko.
+End Play3.
